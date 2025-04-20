@@ -73,8 +73,17 @@ kubectl get nodes
 # On worker Node::::::
 # sudo kubeadm join <master-ip>:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>
 
-# Download kubectl on windows:::::
+# Download kubectl 1.32 on windows:::::
 # curl.exe -LO "https://dl.k8s.io/release/v1.32.0/bin/windows/amd64/kubectl.exe"
+
+# Download kubectl 1.29 on windows:::::
+# curl.exe -LO "https://dl.k8s.io/release/v1.29.0/bin/windows/amd64/kubectl.exe"
+
+# Access from local host ::::
+#  kubectl get ns --insecure-skip-tls-verify
+
+# Downlaod OpenLens IDE OpenSource ::::
+# https://github.com/MuhammedKalkan/OpenLens/releases
 
 
 
