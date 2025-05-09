@@ -1,0 +1,40 @@
+Cluster Info and Configuration ::
+kubectl version	        Show client and server version of kubectl
+kubectl cluster-info	Show info about the cluster
+
+
+Pods Management ::
+kubectl get pods
+kubectl get pods -n <namespace>	        List pods in a specific namespace
+kubectl describe pod <pod-name>	        Show detailed pod info
+kubectl logs <pod-name>	                View logs of a pod
+kubectl logs <pod-name> -c <container-name>	    View logs of a specific container
+kubectl exec -it <pod-name> -- /bin/sh	        SSH into a pod
+
+Deployments & ReplicaSets ::
+kubectl get deployments                     	List all deployments
+kubectl describe deployment <deployment-name>	Detailed info on a deployment
+kubectl apply -f <file>.yaml	                Apply configuration from a YAML file
+
+Services & Networking ::
+kubectl get svc	                        List all services
+kubectl describe svc <service-name>	    Detailed info about a service
+kubectl port-forward svc/<service-name> <local-port>:<service-port>  Access a svc locally
+kubectl port-forward <pod-name> <local-port>:<pod-port>	             Access a pod locally
+
+Namespaces & Resources ::
+kubectl get namespaces	            List all namespaces
+kubectl create namespace <name>	    Create a new namespace
+kubectl delete namespace <name>	    Delete a namespace
+
+Other Common Resources
+kubectl get all	        Get all resources in the default namespace
+kubectl get nodes	    List cluster nodes
+kubectl get events	    View recent cluster events
+
+Delete Resources ::
+kubectl delete pod <pod-name>	    Delete a pod
+kubectl delete -f <file>.yaml	    Delete resources defined in a YAML file
+
+
+
