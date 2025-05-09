@@ -1,4 +1,4 @@
-# Update and install dependencies
+# Update and install dependencies (on both nodes)
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl apt-transport-https ca-certificates gnupg lsb-release
 
@@ -34,6 +34,10 @@ sudo apt install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
 ###### Fix for bridge-nf-call-iptables does not exist ###### START ###
+
+# These commands are part of the prerequisites for setting up Kubernetes (typically when using 
+# kubeadm on Linux). They configure kernel modules and networking parameters to allow proper packet 
+# forwarding and firewalling.
 
 # Load the br_netfilter module (on both)
 sudo modprobe br_netfilter
