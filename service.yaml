@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80        # Service port
+      targetPort: 80  # Container port
+  type: NodePort     # Change to NodePort or LoadBalancer if needed
+
+# kubectl port-forward svc/nginx-service 5566:80
