@@ -9,7 +9,7 @@ echo \
   $(lsb_release -cs) stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt update
+sudo apt update -y
 sudo apt install -y docker-ce docker-ce-cli containerd.io
 sudo usermod -aG docker $USER
 
@@ -44,7 +44,7 @@ sudo modprobe br_netfilter
 
 # Ensure it loads on boot (on both)
 echo "br_netfilter" | sudo tee /etc/modules-load.d/k8s.conf
-sleep 10
+# sleep 10
 
 # Set required sysctl parameters (on both)
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
@@ -84,7 +84,7 @@ kubectl get nodes
 # curl.exe -LO "https://dl.k8s.io/release/v1.29.0/bin/windows/amd64/kubectl.exe"
 
 # Access from local host ::::
-#  kubectl get ns --insecure-skip-tls-verify
+# kubectl get ns --insecure-skip-tls-verify
 
 # Downlaod OpenLens IDE OpenSource ::::
 # https://github.com/MuhammedKalkan/OpenLens/releases
