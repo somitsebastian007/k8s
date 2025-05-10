@@ -19,7 +19,7 @@ echo "[Step 1] Update and upgrade system packages"
 # Explicitly hold the current kernel packages (AWS-specific)
 sudo apt-mark hold linux-image-$(uname -r)
 sudo apt-mark hold linux-headers-$(uname -r)
-sudo apt-mark hold linux-aws linux-aws-headers-$(uname -r | cut -d'-' -f1-2)
+sudo apt-mark hold linux-aws
 
 # Exclude kernel packages from upgrade
 echo "linux-image-* hold" | sudo dpkg --set-selections
