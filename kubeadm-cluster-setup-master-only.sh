@@ -63,9 +63,9 @@ sudo sysctl --system
 # Initialize Kubernetes (on master node only) (Praivate IP)
 # sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 
-PUBLIC_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
-sudo kubeadm init --apiserver-advertise-address=$PUBLIC_IP --pod-network-cidr=192.168.0.0/16 | tee output.txt
-# sudo kubeadm init --apiserver-advertise-address=$PUBLIC_IP --pod-network-cidr=192.168.0.0/16
+# PUBLIC_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
+# sudo kubeadm init --apiserver-advertise-address=$PUBLIC_IP --pod-network-cidr=192.168.0.0/16 | tee output.txt
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 
 # Configure kubectl access for your user (on master only):
 mkdir -p $HOME/.kube
