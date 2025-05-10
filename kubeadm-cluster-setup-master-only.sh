@@ -4,14 +4,33 @@ set -e
 # Make the script non-interactive to suppress prompts
 export DEBIAN_FRONTEND=noninteractive
 
-# Accept service restarts automatically during package upgrades
+# Stop unattended-upgrades to prevent interference
+echo "[Step 0] Stop unattended-upgrades to prevent interference"
+sudo systemctl stop unattended-upgrades
+sudo systemctl disable unattended-upgrades --now
+
+# Configure debconf to suppress service restart prompts
+echo "[Step 0.1] Configure debconf to suppress prompts"
 echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections
+echo 'libc6 libraries/restart-without-asking boolean true' | sudo debconf-set-selections
+echo 'libpam0g libraries/restart-without-asking boolean true' | sudo debconf-set-selections
 
 echo "[Step 1] Update and upgrade system packages"
-# Prevent kernel upgrades
+# Explicitly hold the current kernel packages (AWS-specific)
 sudo apt-mark hold linux-image-$(uname -r)
 sudo apt-mark hold linux-headers-$(uname -r)
-sudo apt update && sudo apt upgrade -yq
+sudo apt-mark hold linux-aws linux-aws-headers-$(uname -r | cut -d'-' -f1-2)
+
+# Exclude kernel packages from upgrade
+echo "linux-image-* hold" | sudo dpkg --set-selections
+echo "linux-headers-* hold" | sudo dpkg --set-selections
+echo "linux-aws* hold" | sudo dpkg --set-selections
+
+# Update and upgrade with additional non-interactive flags
+sudo apt update
+sudo apt upgrade -yq --allow-downgrades --allow-remove-essential --allow-change-held-packages
+
+# Install required packages
 sudo apt install -yq curl apt-transport-https ca-certificates gnupg lsb-release debconf-utils
 
 echo "[Step 2] Install Docker dependencies and repo"
@@ -54,7 +73,7 @@ sudo systemctl restart networkd-dispatcher.service
 sudo systemctl restart packagekit.service
 sudo systemctl restart polkit.service
 sudo systemctl restart systemd-logind.service
-sudo systemctl restart unattended-upgrades.service
+sudo systemctl restart unattended-upgrades.service || true
 sudo systemctl restart user@1000.service || true
 
 echo "[Step 6] Configure networking modules and sysctl"
@@ -81,3 +100,8 @@ echo "[Step 9] Install Calico CNI plugin"
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
 
 echo "Kubernetes Master Node is set up. You can now join worker nodes using the kubeadm join command."
+
+# Re-enable unattended-upgrades
+echo "[Step 10] Re-enable unattended-upgrades"
+sudo systemctl enable unattended-upgrades
+sudo systemctl start unattended-upgrades
