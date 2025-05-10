@@ -8,6 +8,9 @@ export DEBIAN_FRONTEND=noninteractive
 echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections
 
 echo "[Step 1] Update and upgrade system packages"
+# Prevent kernel upgrades
+sudo apt-mark hold linux-image-$(uname -r)
+sudo apt-mark hold linux-headers-$(uname -r)
 sudo apt update && sudo apt upgrade -yq
 sudo apt install -yq curl apt-transport-https ca-certificates gnupg lsb-release debconf-utils
 
@@ -43,6 +46,17 @@ sudo apt update
 sudo apt install -yq kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
+echo "[Step 5.1] Restart services that might be using outdated libraries"
+sudo systemctl restart dbus.service
+sudo systemctl restart irqbalance.service
+sudo systemctl restart multipathd.service
+sudo systemctl restart networkd-dispatcher.service
+sudo systemctl restart packagekit.service
+sudo systemctl restart polkit.service
+sudo systemctl restart systemd-logind.service
+sudo systemctl restart unattended-upgrades.service
+sudo systemctl restart user@1000.service || true
+
 echo "[Step 6] Configure networking modules and sysctl"
 sudo modprobe br_netfilter
 echo "br_netfilter" | sudo tee /etc/modules-load.d/k8s.conf
@@ -55,28 +69,15 @@ EOF
 
 sudo sysctl --system
 
-echo "[Step 7] Check if system needs reboot"
-if [ -f /var/run/reboot-required ]; then
-    echo "System requires reboot to apply changes. Rebooting now..."
-    sudo reboot
-fi
+echo "[Step 7] Initializing Kubernetes cluster"
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 
-# IMPORTANT:
-# Run the following steps ONLY on the MASTER NODE after reboot or log back in
+echo "[Step 8] Configuring kubectl for the current user"
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-if [[ "$1" == "master" ]]; then
-    echo "[MASTER NODE ONLY] Initializing Kubernetes cluster"
-    sudo kubeadm init --pod-network-cidr=192.168.0.0/16
-
-    echo "[MASTER NODE ONLY] Configuring kubectl for the current user"
-    mkdir -p $HOME/.kube
-    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
-    echo "Kubernetes Master Node is set up. You can now join worker nodes using the kubeadm join command."
-else
-    echo "Worker node preparation complete. Wait for the master to provide the join command."
-fi
-
-# Install a CNI plugin (on master)
+echo "[Step 9] Install Calico CNI plugin"
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
+
+echo "Kubernetes Master Node is set up. You can now join worker nodes using the kubeadm join command."
