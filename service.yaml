@@ -11,3 +11,4 @@ spec:
       targetPort: 80  # Container port
   type: NodePort     # Change to clusterIP if needed
 # kubectl port-forward svc/nginx-service 5566:80
+# http://<service-name>.<namespace>.svc.cluster.local
