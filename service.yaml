@@ -9,6 +9,5 @@ spec:
     - protocol: TCP
       port: 80        # Service port
       targetPort: 80  # Container port
-  type: NodePort     # Change to NodePort or LoadBalancer if needed
-
+  type: NodePort     # Change to clusterIP if needed
 # kubectl port-forward svc/nginx-service 5566:80
