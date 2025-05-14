@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nginx
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -18,7 +18,5 @@ spec:
         - name: nginx
           image: nginx:latest
           ports:
-            - containerPort: 80
-
-            
+            - containerPort: 80        
 # kubectl port-forward pod/<nginx-pod-name> 7799:80
