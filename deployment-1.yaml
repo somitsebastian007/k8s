@@ -20,3 +20,4 @@ spec:
           ports:
             - containerPort: 80        
 # kubectl port-forward pod/<nginx-pod-name> 7799:80
+# kubectl get deployments -l app=nginx
